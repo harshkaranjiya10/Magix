@@ -93,7 +93,19 @@ export function SignupForm({
           <FieldDescription>Please confirm your password.</FieldDescription>
         </Field> */}
         <Field>
-          <Button type="submit">Create Account</Button>
+          <Button type="submit" disabled={isPending}
+            onClick={() =>
+              toast("Login requested", {
+                description: state.error ? state.error : "Logging in...",
+                action: {
+                  label: "Undo",
+                  onClick: () => console.log("Undo"),
+                },
+              })
+            }
+          >
+            {isPending ? "Creating Account..." : "Create Account"}
+          </Button>
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
