@@ -11,8 +11,8 @@ export const config = {
 export function proxy(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
 
-  console.log("PATH:", req.nextUrl.pathname);
-  console.log("TOKEN:", token); // 👈 IMPORTANT
+  /* console.log("PATH:", req.nextUrl.pathname);
+  console.log("TOKEN:", token); // 👈 IMPORTANT */
 
   // protect dashboard
   if (req.nextUrl.pathname.startsWith("/dashboard")) {

@@ -8,7 +8,6 @@ import jwt from "jsonwebtoken";
 
 
 export async function login(prevState: any, formData: FormData) {
-    console.log("Login action called with formData:", formData); // debug
   await connectDB();
 
   const mobile = formData.get("mobile") as string;
@@ -38,9 +37,9 @@ export async function login(prevState: any, formData: FormData) {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     path: "/",
+    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30  days
   });
 
-  console.log("Token set in cookies, redirecting to dashboard..."); 
 
   return { success: true, error: "" };
 }

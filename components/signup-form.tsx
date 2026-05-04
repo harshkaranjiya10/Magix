@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input"
 
 import { signup } from "@/app/actions/signup"
-import { useActionState, useEffect } from "react"
+import { useActionState, useEffect, useState } from "react"
 import { useRouter } from "next/navigation";
 
 const initialState = {
@@ -23,13 +23,25 @@ export function SignupForm({
   ...props
 }: React.ComponentProps<"form">) {
 
-  const [state, formAction] = useActionState(signup, initialState);
+  const [state, formAction, isPending] = useActionState(signup, initialState);
+
+  const [formValues, setFormValues] = useState({
+    name: "",
+    mobile: "",
+    password: "",
+  });
+
   const router = useRouter();
   useEffect(() => {
     if (state.success) {
+      setFormValues({
+        name: "",
+        mobile: "",
+        password: "",
+      });
       router.replace("/dashboard");
     }
-  }, [state.success]);
+  }, [state.success, router]);
 
   return (
     <form action={formAction} className={cn("flex flex-col gap-6", className)} {...props}>
@@ -49,6 +61,8 @@ export function SignupForm({
             placeholder="John Doe"
             required
             className="bg-background"
+            value={formValues.name}
+            onChange={(e) => setFormValues({ ...formValues, name: e.target.value })}
           />
         </Field>
         <Field>
@@ -58,11 +72,13 @@ export function SignupForm({
             type="tel"
             name="mobile"
             pattern="^[6-9]\d{9}$"
-            placeholder="123-456-7890"
+            placeholder="9876543210"
             minLength={10}
             maxLength={10}
             required
             className="bg-background"
+            value={formValues.mobile}
+            onChange={(e) => setFormValues({ ...formValues, mobile: e.target.value })}
           />
           {/* <FieldDescription>
             We&apos;ll use this to contact you. We will not share your mobile number
@@ -75,8 +91,11 @@ export function SignupForm({
             id="password"
             type="password"
             name="password"
+            minLength={8}
             required
             className="bg-background"
+            value={formValues.password}
+            onChange={(e) => setFormValues({ ...formValues, password: e.target.value })}
           />
           <FieldDescription>
             Must be at least 8 characters long.
@@ -93,20 +112,17 @@ export function SignupForm({
           <FieldDescription>Please confirm your password.</FieldDescription>
         </Field> */}
         <Field>
-          <Button type="submit" disabled={isPending}
-            onClick={() =>
-              toast("Login requested", {
-                description: state.error ? state.error : "Logging in...",
-                action: {
-                  label: "Undo",
-                  onClick: () => console.log("Undo"),
-                },
-              })
-            }
-          >
+          <Button type="submit" disabled={isPending}>
             {isPending ? "Creating Account..." : "Create Account"}
           </Button>
         </Field>
+        
+        {state.error && (
+          <p className="text-red-500 text-sm text-center">
+            {state.error}
+          </p>
+        )}
+
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
           {/* <Button variant="outline" type="button">

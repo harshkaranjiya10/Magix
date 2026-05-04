@@ -12,11 +12,19 @@ export async function signup(prevState: any, formData: FormData) {
     const password = formData.get("password") as string;
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const existingUser = await User.findOne({ mobile });
+
+    if (existingUser) {
+        return { success: false, error: "Mobile number already registered" };
+    }
+    const createdAt = new Date().toISOString();
 
     await User.create({
         name,
         mobile,
         password: hashedPassword,
+        role: "user",
+        joiningDate: createdAt
     });
 
     return { success: true, error: "" };

@@ -8,9 +8,10 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { toast } from "sonner"
 
 import { login } from "@/app/actions/login"
-import { useActionState, useEffect } from "react"
+import { useActionState, useEffect, useState } from "react"
 
 import { useRouter } from "next/navigation";
 
@@ -25,13 +26,23 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"form">) {
   const router = useRouter();
-  const [state, formAction] = useActionState(login, initialState);
+  const [state, formAction, isPending] = useActionState(login, initialState);
+
+  const [formValues, setFormValues] = useState({
+    mobile: "",
+    password: "",
+  });
 
   useEffect(() => {
     if (state.success) {
+      setFormValues({
+        mobile: "",
+        password: "",
+      });
+
       router.replace("/dashboard");
     }
-  }, [state.success]);
+  }, [state.success, router]);
 
   return (
     <form action={formAction} className={cn("flex flex-col gap-6", className)} {...props}>
@@ -49,22 +60,24 @@ export function LoginForm({
             type="tel"
             name="mobile"
             pattern="^[6-9]\d{9}$"
-            placeholder="923-456-7890"
+            placeholder="9876543210"
             minLength={10}
             maxLength={10}
             required
             className="bg-background"
+            value={formValues.mobile}
+            onChange={(e) => setFormValues({ ...formValues, mobile: e.target.value })}
           />
         </Field>
         <Field>
           <div className="flex items-center">
             <FieldLabel htmlFor="password">Password</FieldLabel>
-            <a
+            {/* <a
               href="#"
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
               Forgot your password?
-            </a>
+            </a> */}
           </div>
           <Input
             id="password"
@@ -72,6 +85,10 @@ export function LoginForm({
             name="password"
             required
             className="bg-background"
+            autoComplete="current-password"
+            minLength={8}
+            value={formValues.password}
+            onChange={(e) => setFormValues({ ...formValues, password: e.target.value })}
           />
         </Field>
         <Field>
@@ -79,6 +96,11 @@ export function LoginForm({
             {isPending ? "Logging in..." : "Login"}
           </Button>
         </Field>
+        {state.error && (
+          <p className="text-red-500 text-sm text-center">
+            {state.error}
+          </p>
+        )}
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
           {/* <Button variant="outline" type="button">

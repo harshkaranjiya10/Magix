@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button"
+import { ThemeProvider } from "@/components/theme-provider"
 
 export default function Page() {
   return (
+    <ThemeProvider>
     <div className="flex min-h-svh p-6">
       <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
         <div>
@@ -18,5 +20,6 @@ export default function Page() {
         </Button>
       </div>
     </div>
+  </ThemeProvider>
   )
 }

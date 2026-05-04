@@ -4,7 +4,10 @@
 import { cookies } from "next/headers";
 
 export async function logout() {
-    (await cookies()).delete("token");
+    const cookieStore = await cookies();
 
-    return { success: true };
+    cookieStore.delete("token");
+    //cookieStore.delete("user");
+
+    return { success: true, error: "" };
 }
