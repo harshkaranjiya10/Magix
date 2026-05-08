@@ -20,8 +20,9 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
-import {addUser} from "@/app/actions/addUser"
+import { addUser } from "@/app/actions/addUser"
 import { useActionState, useEffect, useState } from "react"
 
 function formatDate(date: Date | undefined) {
@@ -43,12 +44,14 @@ function isValidDate(date: Date | undefined) {
 
 export default function AthleteForm({
   className,
-}: React.ComponentProps<"form">) {
+  onSuccess,
+}: React.ComponentProps<"form"> & {
+  onSuccess?: () => void
+}) {
   const [open, setOpen] = React.useState(false)
   const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [month, setMonth] = React.useState<Date | undefined>(date)
   const [value, setValue] = React.useState(formatDate(date))
-  const [isSubmitting, setIsSubmitting] = React.useState(false)
   const router = useRouter()
   const initialState = {
     success: false,
@@ -64,7 +67,7 @@ export default function AthleteForm({
     name: "",
   })
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (state.success) {
       setFormValues({
         mobile: "",
@@ -73,7 +76,15 @@ export default function AthleteForm({
         password: "",
       })
     }
-  }, [state.success, router])
+
+    if (state.success) {
+      toast.success("User updated successfully!")
+      router.refresh()
+      onSuccess?.()
+    } else if (!state.success && state.remark !== "") {
+      toast.error(state.remark)
+    }
+  }, [state, router])
 
   return (
     <div>
@@ -83,7 +94,15 @@ export default function AthleteForm({
       >
         <div className="grid gap-3">
           <Label htmlFor="name">Full Name</Label>
-          <Input type="text" id="name" name="name" value={formValues.name} onChange={(e) => setFormValues({ ...formValues, name: e.target.value })}/>
+          <Input
+            type="text"
+            id="name"
+            name="name"
+            value={formValues.name}
+            onChange={(e) =>
+              setFormValues({ ...formValues, name: e.target.value })
+            }
+          />
         </div>
         <div className="grid gap-3">
           <Label htmlFor="mobile">Mobile Number</Label>
@@ -94,12 +113,14 @@ export default function AthleteForm({
             minLength={10}
             name="mobile"
             value={formValues.mobile}
-            onChange={(e) => setFormValues({ ...formValues, mobile: e.target.value })}
+            onChange={(e) =>
+              setFormValues({ ...formValues, mobile: e.target.value })
+            }
           />
         </div>
 
         <div>
-          <Field className=" w-48">
+          <Field className="w-48">
             <FieldLabel htmlFor="date-required">Joining Date</FieldLabel>
             <InputGroup>
               <InputGroupInput
@@ -160,22 +181,18 @@ export default function AthleteForm({
             <input
               type="hidden"
               name="joiningDate"
-              value={date?.toISOString() || "" }
-              
+              value={date?.toISOString() || ""}
             />
           </Field>
         </div>
-        {state.remark && (
-          <p className="text-red-500 text-sm text-center">
-            {state.remark}
-          </p>
+        {!state.success && state.remark !== "" && (
+          <p className="text-center text-sm text-red-500">{state.remark}</p>
+        )}
+        {state.success && (
+          <p className="text-center text-sm text-green-500">{state.remark}</p>
         )}
 
-        
-        <Button type="submit">
-          Save changes
-        </Button>
-        
+        <Button type="submit">Save changes</Button>
       </form>
     </div>
   )

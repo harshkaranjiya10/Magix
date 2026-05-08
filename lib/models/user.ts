@@ -10,7 +10,10 @@ const UserSchema = new mongoose.Schema(
       enum: ["user", "coach", "admin"],
       default: "user",
     },
-    joiningDate: Date,
+    joiningDate: {
+      type: Date,
+      default: Date.now,
+    },
   },
   {
     timestamps: true,

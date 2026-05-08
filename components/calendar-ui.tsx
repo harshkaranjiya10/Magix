@@ -55,7 +55,7 @@ export default function CalendarUI() {
               }
               const key = keyFromDate(day.date)
               const workout = workoutMap[key]
-              console.log(day.date)
+
               return (
                 <CalendarDayButton
                   day={day}

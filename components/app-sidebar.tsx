@@ -20,36 +20,19 @@ import Link from "next/link"
 
 import { NavUser } from "@/components/nav-user"
 
-import Image from "next/image"
-import Magix from "@/public/Magix-bg.png"
 import { data } from "@/lib/data"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-
   const user = {
     name: "John Doe",
     mobile: "34567890",
     role: "admin",
     avatar: "https://i.pravatar.cc/150?img=3",
-  };
+  }
   return (
     <Sidebar {...props}>
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  {/* <GalleryVerticalEndIcon className="size-4" /> */}
-                 {/* <Image src={Magix} alt="MagixThenics Logo" width={32} height={32} /> */}
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  {/* <span className="font-medium">MagixThenics</span> */}
-                  {/* <span className="">v1</span> */}
-                </div>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
@@ -78,9 +61,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-       <SidebarFooter>
+      <SidebarFooter>
         <NavUser user={user} />
-       </SidebarFooter>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )

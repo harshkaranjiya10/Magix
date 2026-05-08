@@ -17,11 +17,12 @@ const attendanceSchema = new mongoose.Schema({
     default: false,
   },
 
-  workout: {
+  /* Edit and Scalling time */
+  /* workout: {
     type: String, // optional (Push Day, Legs, etc.)
     default: "",
     //type: WorkoutId (scalling...)
-  },
+  }, */
 
   markedBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -33,5 +34,5 @@ const attendanceSchema = new mongoose.Schema({
 attendanceSchema.index({ userId: 1, date: 1 }, { unique: true }); //Primary entities
 
 
-export default mongoose.models.Attendance ||
-  mongoose.model("Attendance", attendanceSchema);
+export default mongoose.models.Attendances ||
+  mongoose.model("Attendances", attendanceSchema);

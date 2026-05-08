@@ -19,10 +19,6 @@ export default async function UserDetails() {
 
   const user = await User.findById(authUser.userId).lean();
 
-  console.log(authUser);
-  console.log(user);
-
-
   return (
     <div className={cn("flex flex-row gap-6 items-center")}>
         <div className="rounded-xl border p-2 bg-muted/50 hidden md:block">
