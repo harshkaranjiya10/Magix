@@ -16,27 +16,37 @@ import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger
+  SidebarTrigger,
 } from "@/components/ui/sidebar"
 
 import UserDetails from "@/components/user-details"
 
+import { getCurrentUser } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
-export default function DashboardLayout({
+import { UserProvider } from "@/context/user-context"
+
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b sticky top-0 z-10 bg-background">
-          <div className="flex items-center gap-2 px-3">
-            <SidebarTrigger />
-            <Separator orientation="vertical" className="mr-2" />
+  const user = await getCurrentUser()
+  
+  if (!user) redirect("/login")
+  if (user.role == "user") redirect("/")
 
-            {/* <Breadcrumb>
+  return (
+    <UserProvider user={user}>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-2 border-b bg-background">
+            <div className="flex items-center gap-2 px-3">
+              <SidebarTrigger />
+              <Separator orientation="vertical" className="mr-2" />
+
+              {/* <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink href="/dashboard">
@@ -49,27 +59,33 @@ export default function DashboardLayout({
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb> */}
-            <Link  href="/dashboard" className="font-bold flex items-center gap-2">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 font-bold"
+              >
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Image src={Magix} alt="MagixThenics Logo" width={32} height={32}/>
+                  <Image
+                    src={Magix}
+                    alt="MagixThenics Logo"
+                    width={32}
+                    height={32}
+                  />
                 </div>
                 <div className="leading-none">
                   <div className="font-medium">MagixThenics</div>
                 </div>
-            </Link>
+              </Link>
               {/* <h1 className="text-2xl font-bold">Motivational Quote</h1> */}
-          </div>
+            </div>
 
-          <div className="ml-auto flex items-center gap-2 p-4">
-            <UserDetails />
-          </div>
-        </header>
+            <div className="ml-auto flex items-center gap-2 p-4">
+              <UserDetails />
+            </div>
+          </header>
 
-        <div className="flex flex-1 flex-col gap-4 p-4">
-          {children}
-        </div>
-
-      </SidebarInset>
-    </SidebarProvider>
+          <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
+        </SidebarInset>
+      </SidebarProvider>
+    </UserProvider>
   )
 }

@@ -1,10 +1,9 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Pencil } from "lucide-react"
+import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
 
 import AthleteActions from "@/components/athlete-list/athlete-action"
 
@@ -21,15 +20,19 @@ export type Athlete = {
 export const columns: ColumnDef<Athlete>[] = [
   {
     id: "select",
+    size: 40,
+
     header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
+      <div>
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      </div>
     ),
     cell: ({ row }) => (
-      <div>
+      <div onClick={(e) => e.stopPropagation()}>
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -52,20 +55,30 @@ export const columns: ColumnDef<Athlete>[] = [
         </Button>
       )
     },
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {row.getValue("name").length > 20
+          ? row.getValue("name").slice(0, 15) + "..."
+          : row.getValue("name")}
+      </div>
+    ),
   },
   {
     accessorKey: "mobile",
     header: "Mobile",
   },
   {
+    accessorKey: "markedBy",
+    header: "Marked By",
+
+    cell: ({ row }) =>
+      row.getValue("markedBy") === "" ? "Not Marked" : row.getValue("markedBy"),
+  },
+  {
     accessorKey: "dummy",
     header: "",
     cell: ({ row, table }) => (
-      <AthleteActions
-        key={row.id}
-        athleteId={row.original._id}
-        onDeleted={() => table.options.meta?.refreshData()} // ← call refresh
-      />
+      <AthleteActions key={row.id} athleteId={row.original._id} />
     ),
   },
 ]

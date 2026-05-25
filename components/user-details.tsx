@@ -1,6 +1,4 @@
-import { getCurrentUser } from "@/lib/auth";
-import User from "@/lib/models/user";
-import { connectDB } from "@/lib/mongodb";
+"use client"
 
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -10,14 +8,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import RoleForm from "@/components/role-form";
+import { useUser } from "@/context/user-context";
 
-export default async function UserDetails() {
-  const authUser = await getCurrentUser();
-  if (!authUser) return null;
-
-  await connectDB();
-
-  const user = await User.findById(authUser.userId).lean();
+export default function UserDetails() {
+  const user = useUser();
+  //console.log(user)
 
   return (
     <div className={cn("flex flex-row gap-6 items-center")}>

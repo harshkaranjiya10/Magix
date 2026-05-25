@@ -1,38 +1,44 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
-const attendanceSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
+const attendanceSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
 
-  date: {
-    type: Date,
-    required: true,
-  },
+    date: {
+      type: Date,
+      required: true,
+      set: (v: Date) => {
+        const d = new Date(v)
+        d.setUTCHours(0, 0, 0, 0)
+        return d
+      },
+    },
 
-  attended: {
-    type: Boolean,
-    default: false,
-  },
+    attended: {
+      type: Boolean,
+      default: false,
+    },
 
-  /* Edit and Scalling time */
-  /* workout: {
+    /* Edit and Scalling time */
+    /* workout: {
     type: String, // optional (Push Day, Legs, etc.)
     default: "",
     //type: WorkoutId (scalling...)
   }, */
 
-  markedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // coach/admin who marked
+    markedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // coach/admin who marked
+    },
   },
+  { timestamps: true }
+)
 
-}, { timestamps: true });
-
-attendanceSchema.index({ userId: 1, date: 1 }, { unique: true }); //Primary entities
-
+attendanceSchema.index({ userId: 1, date: 1 }, { unique: true }) //Primary entities
 
 export default mongoose.models.Attendances ||
-  mongoose.model("Attendances", attendanceSchema);
+  mongoose.model("Attendances", attendanceSchema)

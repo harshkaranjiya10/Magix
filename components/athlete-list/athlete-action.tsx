@@ -1,12 +1,5 @@
 // At the top of columns.tsx — add this component
-import { useState } from "react"
 import { deleteAthlete } from "@/app/actions/deleteAthlete"
-import {
-  Alert,
-  AlertAction,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert"
 
 import { MoreHorizontalIcon, Pencil, Trash2Icon } from "lucide-react"
 import { Button } from "../ui/button"
@@ -21,18 +14,7 @@ import {
 
 import { useRouter } from "next/navigation"
 
-export default function AthleteActions({
-  athleteId,
-  onDeleted,
-}: {
-  athleteId: string
-  onDeleted: () => void
-}) {
-  const handleDelete = async () => {
-    await deleteAthlete(athleteId)
-    onDeleted() // tell parent to refresh
-  }
-
+export default function AthleteActions({ athleteId }: { athleteId: string }) {
   const router = useRouter()
 
   return (
@@ -50,13 +32,6 @@ export default function AthleteActions({
             >
               <Pencil />
               Edit
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem variant="destructive" onClick={handleDelete}>
-              <Trash2Icon />
-              Trash
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>

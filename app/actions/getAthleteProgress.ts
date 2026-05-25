@@ -1,12 +1,21 @@
 // app/actions/getAthleteProgress.ts
-"use server";
+"use server"
 
-import { connectDB } from "@/lib/mongodb";
-import Attendance from "@/lib/models/attendance";
-import User from "@/lib/models/user";
+import mongoose from "mongoose"
+import { connectDB } from "@/lib/mongodb"
+import Attendance from "@/lib/models/attendance"
+import User from "@/lib/models/user"
 
-export async function getAthleteProgress(userId: string, year: number, month: number) {
-  await connectDB();
+export async function getAthleteProgress(
+  userId: string,
+  year: number,
+  month: number
+) {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return JSON.stringify({ athlete: null, attendance: [] })
+  }
+
+  await connectDB()
 
   // First day and last day of the requested month
   const from = new Date(year, month, 1)

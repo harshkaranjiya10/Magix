@@ -1,21 +1,21 @@
 // app/actions/deleteAthlete.ts
-"use server";
+"use server"
 
-import { connectDB } from "@/lib/mongodb";
-import User from "@/lib/models/user";
-import Attendance from "@/lib/models/attendance";
+import { connectDB } from "@/lib/mongodb"
+import User from "@/lib/models/user"
+import Attendance from "@/lib/models/attendance"
 
 export async function deleteAthlete(userId: string) {
-  await connectDB();
+  await connectDB()
 
   try {
     // Delete from both collections
-    await User.findByIdAndDelete(userId);
-    await Attendance.deleteMany({ userId });
+    await User.findByIdAndDelete(userId)
+    await Attendance.deleteMany({ userId })
 
-    return { success: true };
+    return { success: true }
   } catch (err) {
-    console.log(err);
-    return { success: false };
+    console.log(err)
+    return { success: false }
   }
 }

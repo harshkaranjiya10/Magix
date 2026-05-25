@@ -5,21 +5,21 @@ import * as React from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
-  RowSelection,
   SortingState,
   VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  getPaginationRowModel,
 } from "@tanstack/react-table"
 
 import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -38,6 +38,26 @@ import { markAttendance } from "@/app/actions/markAttendance"
 import { getAttendanceForToday } from "@/app/actions/getAttendance"
 
 import { toast } from "sonner"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  CalendarIcon,
+  Loader2,
+} from "lucide-react"
+import { cn } from "@/lib/utils"
+
+import { Spinner } from "@/components/ui/spinner"
+import { handleExportToExcel } from "@/app/utils/exportToExcel"
+import { useRouter } from "next/navigation"
+import { useUser } from "@/context/user-context"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -50,18 +70,27 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [tableData, setTableData] = React.useState<TData[]>(data)
   const [sorting, setSorting] = React.useState<SortingState>([])
-
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
-
   const [rowSelection, setRowSelection] = React.useState({})
-  const [presentAthletes, setPresentAthletes] = React.useState({})
+  const [selectedDate, setSelectedDate] = React.useState<Date>(new Date())
+  const [datePickerOpen, setDatePickerOpen] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(true)
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
+
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 20,
+  })
+
+  const router = useRouter()
+  const Coach = useUser()
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
@@ -70,10 +99,11 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
     meta: {
       refreshData: async () => {
-        // re-fetch athletes from your parent or re-init
-        await fetchAndMergeAttendance()
+        await fetchAndMergeAttendance(selectedDate)
       },
     },
     state: {
@@ -81,40 +111,30 @@ export function DataTable<TData, TValue>({
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination,
     },
   })
 
-  React.useEffect(() => {
-    const initAttendance = async () => {
-      const date = new Date()
-      date.setHours(0, 0, 0, 0)
+  const fetchAndMergeAttendance = async (date: Date) => {
+    const normalizedDate = new Date(date)
+    normalizedDate.setHours(0, 0, 0, 0)
 
-      const records = data.map((athlete) => ({
-        userId: athlete._id,
-      }))
-      await markAttendance(JSON.stringify({ date, records }))
-
-      // Now fetch today's actual attendance and merge
-      await fetchAndMergeAttendance()
+    if (isNaN(normalizedDate.getTime())) {
+      console.error("Invalid date:", date)
+      return
     }
 
-    initAttendance()
-  }, []) // runs once on mount
+    const raw = await getAttendanceForToday(normalizedDate.toISOString())
+    const attendanceRecords = JSON.parse(raw)
 
-  const fetchAndMergeAttendance = async () => {
-    const raw = await getAttendanceForToday()
-    const attendanceRecords: { userId: string; attended: boolean }[] =
-      JSON.parse(raw)
-
-    // Build a lookup map: userId → attended
     const attendanceMap = new Map(
-      attendanceRecords.map((r) => [r.userId, r.attended])
+      attendanceRecords.map((r: any) => [r.userId, r.attended])
     )
 
-    // Merge attended status into each athlete row
     const merged = data.map((athlete) => ({
       ...athlete,
       attended: attendanceMap.get(athlete._id) ?? false,
+      markedBy: Coach.userId,
     })) as TData[]
 
     setTableData(merged)
@@ -126,48 +146,100 @@ export function DataTable<TData, TValue>({
       }
     })
     setRowSelection(newSelection)
-    data = merged
   }
 
+  React.useEffect(() => {
+    const loadAttendance = async () => {
+      setIsLoading(true)
+      try {
+        await fetchAndMergeAttendance(selectedDate)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadAttendance()
+  }, [selectedDate, data, setTableData])
+
   const handleSubmit = async () => {
-    const allRows = table.getRowModel().rows
-    const selectedRows = table.getSelectedRowModel().rows
+    setIsSubmitting(true)
+    try {
+      const allRows = table.getRowModel().rows
+      const selectedRows = table.getSelectedRowModel().rows
+      const selectedIds = new Set(selectedRows.map((row) => row.id))
 
-    const selectedIds = new Set(selectedRows.map((row) => row.id))
-    //console.log(allRows)
-    const date = new Date()
-    date.setHours(0, 0, 0, 0)
+      const date = new Date(selectedDate)
+      date.setHours(0, 0, 0, 0)
 
-    const records = allRows.map((row) => ({
-      userId: row.original._id,
-      attended: selectedIds.has(row.id),
-    }))
+      const records = allRows.map((row) => ({
+        userId: row.original._id,
+        attended: selectedIds.has(row.id),
+        markedBy: Coach.userId,
+      }))
 
-    const result = await markAttendance(JSON.stringify({ date, records }))
+      const result = await markAttendance(JSON.stringify({ date, records }))
+      await fetchAndMergeAttendance(date)
 
-    await fetchAndMergeAttendance()
-
-    if (result.success) return toast.success("Attendance marked successfully!")
-    else return toast.error("Failed to mark attendance!")
+      if (result.success) toast.success("Attendance marked successfully!")
+      else toast.error("Failed to mark attendance!")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
     <div className="overflow-hidden rounded-md border">
-      <div className="flex items-center p-4">
-        <Input
-          placeholder="Filter Names..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm p-2"
-        />
-        <div className="m-2">
+      <div className="gap-2 sm:flex sm:items-center sm:justify-between">
+        <div className="flex gap-2 p-4">
+          <Input
+            placeholder="Filter Names..."
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            onChange={(event) => {
+              table.getColumn("name")?.setFilterValue(event.target.value)
+              table.setPageIndex(0)
+            }}
+            className="max-w-sm p-2"
+            disabled={isLoading}
+          />
+
+          <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "justify-start text-left font-normal",
+                  !selectedDate && "text-muted-foreground"
+                )}
+                disabled={isLoading || isSubmitting}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate
+                  ? selectedDate.toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })
+                  : "Pick a date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => {
+                  if (date) {
+                    setSelectedDate(date)
+                    setDatePickerOpen(false)
+                  }
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns
-              </Button>
+              <Button variant="outline">Columns</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {table
@@ -195,16 +267,32 @@ export function DataTable<TData, TValue>({
           </DropdownMenu>
         </div>
 
-        <Button
-          variant="default"
-          size="sm"
-          className="mr-2"
-          onClick={handleSubmit}
-        >
-          Submit
-        </Button>
+        <div className="flex items-center space-x-2 p-2">
+          <Button
+            variant="default"
+            size="sm"
+            onClick={handleSubmit}
+            disabled={isLoading || isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <Spinner data-icon="inline-start" />
+                Submit
+              </>
+            ) : (
+              "Submit"
+            )}
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => handleExportToExcel(table, selectedDate)}
+            disabled={isLoading || isSubmitting}
+          >
+            Export
+          </Button>
+        </div>
       </div>
-      {/* Selected columns visible */}
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -225,11 +313,22 @@ export function DataTable<TData, TValue>({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>Loading attendance...</span>
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className="cursor-pointer"
+                onClick={() => row.toggleSelected()}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
@@ -247,6 +346,49 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
+      <div className="flex items-center justify-between border-t px-4 py-3">
+        <p className="text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected &middot;
+          Page {table.getState().pagination.pageIndex + 1} of{" "}
+          {table.getPageCount()}
+        </p>
+
+        <div className="flex items-center gap-1">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ChevronsLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            disabled={!table.getCanNextPage()}
+          >
+            <ChevronsRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }

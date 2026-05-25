@@ -1,20 +1,19 @@
-"use server";
+"use server"
 
-import { connectDB } from "@/lib/mongodb";
-import Attendance from "@/lib/models/attendance";
+import { connectDB } from "@/lib/mongodb"
+import Attendance from "@/lib/models/attendance"
 
 export async function markAttendance(data: any) {
-  await connectDB();
+  await connectDB()
 
   try {
-    const { date, records } = JSON.parse(data);
+    const { date, records, markedBy } = JSON.parse(data)
 
     if (!records) {
-      return { success: false };
+      return { success: false }
     }
 
     const operations = records.map((record: any) => ({
-
       updateOne: {
         filter: {
           userId: record.userId,
@@ -22,17 +21,18 @@ export async function markAttendance(data: any) {
         },
         update: {
           $set: {
-            attended: record.attended
+            attended: record.attended,
+            markedBy,
           },
         },
         upsert: true,
       },
-    }));
+    }))
 
-    await Attendance.bulkWrite(operations);
-    return { success: true };
+    await Attendance.bulkWrite(operations)
+    return { success: true }
   } catch (err) {
-    console.log(err);
-    return { success: false };
+    console.log(err)
+    return { success: false }
   }
 }

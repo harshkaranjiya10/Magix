@@ -78,7 +78,7 @@ export default function AthleteForm({
     }
 
     if (state.success) {
-      toast.success("User updated successfully!")
+      toast.success("User added successfully!")
       router.refresh()
       onSuccess?.()
     } else if (!state.success && state.remark !== "") {
@@ -99,6 +99,9 @@ export default function AthleteForm({
             id="name"
             name="name"
             value={formValues.name}
+            placeholder="Cherry"
+            maxLength={30}
+            minLength={3}
             onChange={(e) =>
               setFormValues({ ...formValues, name: e.target.value })
             }
@@ -112,6 +115,9 @@ export default function AthleteForm({
             maxLength={10}
             minLength={10}
             name="mobile"
+            pattern="^[6-9]\d{9}$"
+            placeholder="9876543210"
+            required
             value={formValues.mobile}
             onChange={(e) =>
               setFormValues({ ...formValues, mobile: e.target.value })

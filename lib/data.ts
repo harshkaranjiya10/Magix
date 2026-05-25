@@ -14,16 +14,12 @@ export const data = {
       url: "/dashboard/attendance",
       role: "coach",
     },
-    {
-      title: "Progress",
-      url: "/dashboard/progress",
-    },
   ],
-};
+}
 
 export const data2 = {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    };
+  id: "728ed52f",
+  amount: 100,
+  status: "pending",
+  email: "m@example.com",
+}

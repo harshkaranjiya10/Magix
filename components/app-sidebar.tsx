@@ -21,19 +21,15 @@ import Link from "next/link"
 import { NavUser } from "@/components/nav-user"
 
 import { data } from "@/lib/data"
+import { useUser } from "@/context/user-context"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = {
-    name: "John Doe",
-    mobile: "34567890",
-    role: "admin",
-    avatar: "https://i.pravatar.cc/150?img=3",
-  }
+  const user = useUser()
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-        </SidebarMenu>
+        <SidebarMenu></SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

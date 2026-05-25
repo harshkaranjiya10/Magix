@@ -1,16 +1,16 @@
 // app/actions/getAttendance.ts
-"use server";
+"use server"
 
-import { connectDB } from "@/lib/mongodb";
-import Attendance from "@/lib/models/attendance";
+import { connectDB } from "@/lib/mongodb"
+import Attendance from "@/lib/models/attendance"
 
-export async function getAttendanceForToday() {
-  await connectDB();
+export async function getAttendanceForToday(dateString?: string) {
+  await connectDB()
+  
+  const date = dateString ? new Date(dateString) : new Date()
+  date.setHours(0, 0, 0, 0)
 
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-
-  const records = await Attendance.find({ date }).lean();
-
-  return JSON.stringify(records);
+  const records = await Attendance.find({ date }).lean()
+  console.log(records)
+  return JSON.stringify(records)
 }
