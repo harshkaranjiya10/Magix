@@ -89,7 +89,7 @@ export const columns: ColumnDef<Athlete>[] = [
           fees={row.original}
           athleteId={row.original.userId}
           onDeleted={() => table.options.meta?.refreshData()}
-          onUpdated={() => table.options.meta?.refreshData()}
+          onUpdate={() => table.options.meta?.refreshData()}
         />
       ),
     },
