@@ -8,6 +8,7 @@ type User = {
   name: string
   mobile: string
   role: string
+  avatar: string
 }
 
 const UserContext = createContext<User | null>(null)
