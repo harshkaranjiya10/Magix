@@ -21,6 +21,7 @@ export default function FeesActions({
   athleteId,
   fees,
   onDeleted,
+  onUpdate,
 }: {
   athleteId: string
   onDeleted: () => void

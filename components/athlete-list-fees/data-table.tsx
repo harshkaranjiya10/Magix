@@ -58,8 +58,8 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     meta: {
-      refreshData: async () => {
-        await router.refresh()
+      refreshData: () => {
+        router.refresh()
       },
     },
     state: {
