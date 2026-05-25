@@ -13,6 +13,7 @@ export async function getCurrentUser() {
       name: string;
       mobile: string;
       userId: string;
+      avatar: string;
     };
   } catch {
     return null;
