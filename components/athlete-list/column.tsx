@@ -56,13 +56,14 @@ export const columns: ColumnDef<Athlete>[] = [
         </Button>
       )
     },
-    cell: ({ row: { original: row } }) => (
-      <div className="capitalize">
-        {row.getValue("name").length > 20
-          ? row.getValue("name").slice(0, 15) + "..."
-          : row.getValue("name")}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const name = row.getValue("name") as string
+      return (
+        <div className="capitalize">
+          {name.length > 20 ? name.slice(0, 15) + "..." : name}
+        </div>
+      )
+    },
   },
   {
     accessorKey: "mobile",
@@ -78,7 +79,7 @@ export const columns: ColumnDef<Athlete>[] = [
   {
     accessorKey: "dummy",
     header: "",
-    cell: ({ row, table }) => (
+    cell: ({ row }) => (
       <AthleteActions key={row.id} athleteId={row.original._id} />
     ),
   },
