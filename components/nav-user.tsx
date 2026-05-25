@@ -1,17 +1,8 @@
 "use client"
 
-import {
-  ChevronsUpDown,
-  LogOut,
+import { ChevronsUpDown, LogOut, CircleUser } from "lucide-react"
 
-  CircleUser
-} from "lucide-react"
-
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,13 +23,12 @@ import { Button } from "@/components/ui/button"
 
 import { logout } from "@/app/actions/logout"
 import { useActionState, useEffect } from "react"
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation"
 
 const initialState = {
   success: false,
   error: "",
-};
-
+}
 
 export function NavUser({
   user,
@@ -50,14 +40,13 @@ export function NavUser({
     role: string
   }
 }) {
-  const { isMobile } = useSidebar();
-  const [state, formAction] = useActionState(logout, initialState);
+  const { isMobile } = useSidebar()
+  const [state, formAction] = useActionState(logout, initialState)
 
+  const router = useRouter()
   useEffect(() => {
-    if (state.success) {
-      redirect("/login");
-    }
-  }, [state.success]);
+    if (state.success) router.push("/login")
+  }, [state.success])
 
   return (
     <SidebarMenu>
@@ -90,7 +79,9 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">{user.name[0]}</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {user.name[0]}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
@@ -121,12 +112,12 @@ export function NavUser({
             </DropdownMenuGroup> */}
             <DropdownMenuSeparator />
             <form action={formAction}>
-                <Button type="submit">
+              <button type="submit">
                 <DropdownMenuItem>
-                    <LogOut />
-                    Log out
+                  <LogOut />
+                  Log out
                 </DropdownMenuItem>
-                </Button>
+              </button>
             </form>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -4,11 +4,9 @@
 import { connectDB } from "@/lib/mongodb"
 import Fees from "@/lib/models/fees"
 
-
-
 export async function getAFees(id: string) {
   await connectDB()
-  const fees = await Fees.findOne({ id })
+  const fees = await Fees.findById(id)
 
   return JSON.stringify(fees)
 }

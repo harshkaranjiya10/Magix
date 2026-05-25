@@ -1,5 +1,3 @@
-"use server"
-
 import { columns } from "@/components/athlete-list/column"
 import { DataTable } from "@/components/athlete-list/data-table"
 

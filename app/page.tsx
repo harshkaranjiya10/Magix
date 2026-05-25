@@ -9,7 +9,7 @@ import { NavMenu } from "@/components/nav-menu"
 
 export default function Page() {
   return (
-    <ThemeProvider>
+    <>
       <header className="sticky top-0 right-0 left-0 z-20 flex h-min items-center md:px-4">
         <motion.div className="mx-auto mt-6 flex w-full max-w-6xl items-center rounded-2xl border-2 bg-background/70 px-6 py-3 backdrop-blur-md">
           <section className="flex items-center gap-4">
@@ -159,6 +159,6 @@ export default function Page() {
           </div>
         </section>
       </main>
-    </ThemeProvider>
+    </>
   )
 }

@@ -10,6 +10,7 @@ import AthleteActions from "@/components/athlete-list/athlete-action"
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.w
 export type Athlete = {
+  _id: string
   id: string
   mobile: string
   name: string

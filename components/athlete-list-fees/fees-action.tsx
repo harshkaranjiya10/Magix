@@ -24,6 +24,7 @@ export default function FeesActions({
 }: {
   athleteId: string
   onDeleted: () => void
+  onUpdate: () => void
   fees: Athlete
 }) {
   const handleDelete = async () => {
@@ -48,9 +49,7 @@ export default function FeesActions({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-40">
           <DropdownMenuGroup>
-            <DropdownMenuItem
-              onClick={() => setEditOpen(true)}
-            >
+            <DropdownMenuItem onClick={() => setEditOpen(true)}>
               <Pencil />
               Edit
             </DropdownMenuItem>

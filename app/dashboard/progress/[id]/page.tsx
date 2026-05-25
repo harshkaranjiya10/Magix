@@ -42,7 +42,12 @@ export default async function ProgressPage({
           </div>
           <p className="text-sm text-muted-foreground">{athlete?.mobile}</p>
           <p className="text-sm text-muted-foreground">
-            {athlete?.joiningDate.split("T")[0].split("-").reverse().join("-")}
+            {new Date(athlete?.joiningDate)
+              .toISOString()
+              .split("T")[0]
+              .split("-")
+              .reverse()
+              .join("-")}
           </p>
         </div>
 

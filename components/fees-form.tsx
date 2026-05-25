@@ -55,6 +55,7 @@ export default function FeesForm({
     validUntil: string
     validFrom: string
     _id: string
+    
   }
 }) {
   const [state, formAction, isPending] = useActionState(addFees, initialState)
