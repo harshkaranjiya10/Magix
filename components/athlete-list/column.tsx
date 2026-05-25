@@ -56,7 +56,7 @@ export const columns: ColumnDef<Athlete>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => (
+    cell: ({ row: { original: row } }) => (
       <div className="capitalize">
         {row.getValue("name").length > 20
           ? row.getValue("name").slice(0, 15) + "..."
