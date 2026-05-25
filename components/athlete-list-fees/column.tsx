@@ -20,10 +20,10 @@ export const columns: ColumnDef<Athlete>[] = [
     header: "Paid On",
     cell: ({ row }) => {
       const date = new Date(row.getValue("paidOn"))
-      return date.toLocaleDateString("en-IN", { 
-        day: "numeric", 
-        month: "short", 
-        year: "numeric" 
+      return date.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
       })
     },
   },
@@ -37,10 +37,10 @@ export const columns: ColumnDef<Athlete>[] = [
     header: "Valid From",
     cell: ({ row }) => {
       const date = new Date(row.getValue("validFrom"))
-      return date.toLocaleDateString("en-IN", { 
-        day: "numeric", 
-        month: "short", 
-        year: "numeric" 
+      return date.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
       })
     },
   },
@@ -49,10 +49,10 @@ export const columns: ColumnDef<Athlete>[] = [
     header: "Valid Until",
     cell: ({ row }) => {
       const date = new Date(row.getValue("validUntil"))
-      return date.toLocaleDateString("en-IN", { 
-        day: "numeric", 
-        month: "short", 
-        year: "numeric" 
+      return date.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
       })
     },
   },
@@ -62,11 +62,9 @@ export const columns: ColumnDef<Athlete>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string
       return (
-        <span className={`rounded-full px-2 py-0.5 text-xs font-medium
-          ${status === "active"  ? "bg-green-100 text-green-700"   : ""}
-          ${status === "expired" ? "bg-red-100 text-red-500"       : ""}
-          ${status === "pending" ? "bg-yellow-100 text-yellow-600" : ""}
-        `}>
+        <span
+          className={`rounded-full px-2 py-0.5 text-xs font-medium ${status === "active" ? "bg-green-100 text-green-700" : ""} ${status === "expired" ? "bg-red-100 text-red-500" : ""} ${status === "pending" ? "bg-yellow-100 text-yellow-600" : ""} `}
+        >
           {status}
         </span>
       )
@@ -81,16 +79,20 @@ export const columns: ColumnDef<Athlete>[] = [
     },
   },
   {
-      accessorKey: "dummy",
-      header: "",
-      cell: ({ row, table }) => (
+    accessorKey: "dummy",
+    header: "",
+    cell: ({ row, table }) => {
+      const refresh = (table.options.meta as { refreshData?: () => void })
+        ?.refreshData
+      return (
         <FeesActions
           key={row.id}
           fees={row.original}
           athleteId={row.original.userId}
-          onDeleted={() => table.options.meta?.refreshData()}
-          onUpdate={() => table.options.meta?.refreshData()}
+          onDeleted={() => refresh?.()}
+          onUpdate={() => refresh?.()}
         />
-      ),
+      )
     },
+  },
 ]
