@@ -1,4 +1,17 @@
-export const data = {
+type NavItem = {
+  title: string
+  url: string
+  isActive?: boolean
+  role?: string
+  items?: {
+    // ← add this
+    title: string
+    url: string
+    isActive?: boolean
+  }[]
+}
+
+export const data: { navMain: NavItem[] } = {
   navMain: [
     {
       title: "Dashboard",
