@@ -68,7 +68,7 @@ export default function FeesActions({
       {editOpen && (
         <FeesForm
           athleteId={athleteId}
-          initialData={fees}
+          initialData={{ ...fees, amount: fees.amount.toString() }}
           onSuccess={() => {
             setEditOpen(false)
           }}
