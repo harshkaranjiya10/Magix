@@ -59,15 +59,18 @@ import { handleExportToExcel } from "@/app/utils/exportToExcel"
 import { useRouter } from "next/navigation"
 import { useUser } from "@/context/user-context"
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<
+  TData extends { _id: string; attended?: boolean },
+  TValue,
+> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
+export function DataTable<
+  TData extends { _id: string; attended?: boolean },
+  TValue,
+>({ columns, data }: DataTableProps<TData, TValue>) {
   const [tableData, setTableData] = React.useState<TData[]>(data)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
