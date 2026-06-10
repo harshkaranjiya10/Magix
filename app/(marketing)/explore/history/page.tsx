@@ -46,9 +46,9 @@ const CHAPTERS = [
   },
 ]
 
-const GLYPHS = ["⊕", "◈", "⊞", "◉", "⊗"]
+const GLYPHS: string[] = ["⊕", "◈", "⊞", "◉", "⊗"]
 
-function ChapterBlock({ chapter, index }) {
+function ChapterBlock({ chapter, index }: { chapter: any; index: number }) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-15% 0px" })
 
