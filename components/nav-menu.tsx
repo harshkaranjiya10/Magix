@@ -34,22 +34,22 @@ const aboutItems = [
 const focusItems = [
   {
     title: "Calisthenics",
-    href: "/focus/calisthenics",
+    href: "/explore/history",
     description: "Master bodyweight strength and movement.",
   },
   {
     title: "Freestyle",
-    href: "/focus/freestyle",
+    href: "/explore/freestyle",
     description: "Unlock dynamic tricks and flow combinations.",
   },
   {
     title: "Flexible",
-    href: "/focus/flexible",
+    href: "/explore/flexible",
     description: "Improve mobility and flexibility naturally.",
   },
   {
     title: "Aesthetics",
-    href: "/focus/aesthetics",
+    href: "/explore/inspiration",
     description: "Build a lean, athletic, aesthetic physique.",
   },
 ]
@@ -61,7 +61,7 @@ export function NavMenu() {
         {/* Success Stories */}
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link href="/success-stories">Success Stories</Link>
+            <Link href="/explore">Explore</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
 

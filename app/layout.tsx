@@ -7,15 +7,6 @@ import { cn } from "@/lib/utils"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "@/components/ui/sonner"
 
-import * as motion from "motion/react-client"
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
-import Link from "next/link"
-
-import Magix from "@/public/Magix-bg.png"
-import { NavMenu } from "@/components/nav-menu"
-import LandingHeader from "@/components/landing-header"
-
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
 const fontMono = Geist_Mono({
@@ -41,8 +32,6 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          <LandingHeader />  
-          
           <TooltipProvider>{children}</TooltipProvider>
         </ThemeProvider>
         <Toaster />

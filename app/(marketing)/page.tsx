@@ -1,56 +1,51 @@
+"use client" // ← required at the top
+
 import * as motion from "motion/react-client"
 import { Button } from "@/components/ui/button"
 import { ThemeProvider } from "@/components/theme-provider"
 import Image from "next/image"
 import Link from "next/link"
 
+import { useEffect, useRef } from "react"
+import { gsap } from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { ScrollToPlugin } from "gsap/ScrollToPlugin"
+
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
+
 import Magix from "@/public/Magix-bg.png"
-import { NavMenu } from "@/components/nav-menu"
 
 export default function Page() {
+  useEffect(() => {
+    const heroTl = gsap.timeline({
+      defaults: { ease: "power4.out" },
+    })
+
+    heroTl
+      .from(".hero-eyebrow", {
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        delay: 0.3,
+      })
+      .from(
+        ".hero-h1 .word",
+        {
+          y: 100,
+          opacity: 0,
+          duration: 0.9,
+          stagger: 0.08,
+        },
+        "-=0.4"
+      )
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill())
+    }
+  }, [])
+
   return (
     <>
-      <header className="sticky top-0 right-0 left-0 z-20 flex h-min items-center md:px-4">
-        <motion.div className="mx-auto mt-6 flex w-full max-w-6xl items-center rounded-2xl border-2 bg-background/70 px-6 py-3 backdrop-blur-md">
-          <section className="flex items-center gap-4">
-            <Link
-              href="/"
-              className="flex items-center gap-3 transition-opacity hover:opacity-90"
-            >
-              <Image
-                src={Magix}
-                alt="MagixThenics Logo"
-                width={50}
-                height={50}
-                className="rounded-xl"
-              />
-
-              <h1 className="text-large font-extrabold tracking-tight">
-                MagixThenics
-              </h1>
-            </Link>
-          </section>
-          <section className="mx-auto flex items-center gap-4">
-            <nav className="hidden items-center gap-8 md:flex">
-              <NavMenu />
-            </nav>
-          </section>
-          <section className="flex items-center gap-3">
-            {/* Login Button - Always Visible */}
-            <Link href="/login">
-              <Button variant="outline" className="rounded-xl px-6">
-                Login
-              </Button>
-            </Link>
-            <Button
-              variant="default"
-              className="hidden rounded-xl px-3 md:flex"
-            >
-              Get Started
-            </Button>
-          </section>
-        </motion.div>
-      </header>
       <main className="min-h-screen bg-background text-foreground">
         <section className="relative overflow-hidden md:px-4">
           {/* Background Glow */}
