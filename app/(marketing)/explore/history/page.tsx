@@ -59,7 +59,6 @@ function ChapterBlock({ chapter, index }: { chapter: any; index: number }) {
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
       className="chapter-block"
-      style={{ "--accent": chapter.accent }}
     >
       <div className="chapter-meta">
         <span className="chapter-glyph">{GLYPHS[index % GLYPHS.length]}</span>
