@@ -29,7 +29,6 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      supprationhydrationwarning="true"
       className={cn(
         "antialiased",
         fontMono.variable,
